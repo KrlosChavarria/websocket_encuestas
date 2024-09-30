@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Encuesta en Tiempo Real</title>
+</head>
+<body>
+  <h1>Encuesta en Tiempo Real</h1>
+  <div id="pregunta">
+    <h2>Pregunta 1: ¿Cuál es tu lenguaje de programación favorito?</h2>
+    <button onclick="enviarRespuesta(1, 'JavaScript')">JavaScript</button>
+    <button onclick="enviarRespuesta(1, 'Python')">Python</button>
+    <button onclick="enviarRespuesta(1, 'Java')">Java</button>
+  </div>
+  <div id="mensaje"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const uuid = prompt("Introduce tu UUID:"); // Cada usuario deberá introducir su UUID
+    const socket = io('http://localhost:3001', { query: { uuid } });
+
+    socket.on('connect', () => {
+      console.log('Conectado al servidor con UUID: ' + uuid);
+    });
+
+    socket.on('respuestaGuardada', (data) => {
+      document.getElementById('mensaje').innerText = data.mensaje;
+      console.log(`Respuesta guardada en el servidor: ${data.data.respuesta}`);
+    });
+
+    function enviarRespuesta(preguntaId, respuesta) {
+      socket.emit('respuesta', { preguntaId, respuesta });
+    }
+  </script>
+</body>
+</html>
